@@ -5,7 +5,7 @@ on:
     branches:
       - master
     tags:
-      - '!refs/tags/*'
+      - '*'
 
 permissions:
     contents: write
