@@ -1,15 +1,18 @@
 name: Build and Release
 
+permissions:
+  contents: write
+  issues: write
+  packages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: write
+  statuses: write
+
 on:
   push:
-    branches:
-      - master
     tags:
-      - '*'
-
-permissions:
-    contents: write
-    packages: write
+    - '*'
 
 jobs:
   build:
