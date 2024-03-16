@@ -64,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./causy-ui-${{ github.ref }}.zip
-          asset_name: causy-ui-${{ github.ref }}.zip
+          asset_path: ./causy-ui-${{ steps.get_tag_name.outputs.SOURCE_TAG }}.zip
+          asset_name: causy-ui-${{ steps.get_tag_name.outputs.SOURCE_TAG }}.zip
           asset_content_type: application/zip
 
