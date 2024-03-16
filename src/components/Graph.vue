@@ -5,8 +5,8 @@ import { MiniMap } from '@vue-flow/minimap'
 import {Layout} from "webcola";
 import {defineComponent} from "vue";
 import Node from "@/components/Node.vue";
-import {ApiService} from "@/api";
-import type {CausyModel} from "@/api";
+import {ApiService} from "@/api/ui";
+import type {CausyModel} from "@/api/ui";
 import('@vue-flow/core/dist/style.css');
 import('../assets/vueflow.css');
 
