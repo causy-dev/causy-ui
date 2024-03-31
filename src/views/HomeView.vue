@@ -4,7 +4,7 @@ import {ApiService} from "@/api/ui";
 import PipelineStepsSidebar from "@/components/PipelineStepsSidebar.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import ShareGraph from "@/components/ShareGraph.vue";
-import type {CausyModel} from "@/api/ui";
+import {useCurrentGraphStore} from "@/stores/graph";
 
 interface DataProps {
   graph: CausyModel | null;
@@ -21,9 +21,14 @@ export default {
   },
 
   mounted() {
+    const graphStore = useCurrentGraphStore();
     ApiService.getModelApiV1ModelGet().then(response => {
       this.graph = response;
+      graphStore.setGraph(this.graph);
+      console.log(graphStore.currentGraph);
     });
+
+
   },
   methods: {
     toggleSidebar() {

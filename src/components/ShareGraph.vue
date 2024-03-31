@@ -27,8 +27,9 @@ export default {
 
     share() {
       var graph = useCurrentGraphStore();
+      console.log(graph.currentGraph);
       V1Service.createShareV1SharePost({
-        graph: graph.graph,
+        graph: graph.currentGraph,
         duration: this.selectedSharingDuration,
       }).then((response) => {
         console.log(response);

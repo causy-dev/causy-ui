@@ -7,7 +7,7 @@ export const useCurrentGraphStore = defineStore("currentGraph",{
         graph: null as CausyModel | null,
     }),
     getters: {
-        graph: (state) => state.graph,
+        currentGraph: (state) => state.graph,
     },
     actions: {
         setGraph(graph: CausyModel) {
