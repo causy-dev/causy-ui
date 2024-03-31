@@ -23,7 +23,7 @@ export const OpenAPI: OpenAPIConfig = {
     BASE: 'https://share.causy.dev',
     VERSION: '0.0.1',
     WITH_CREDENTIALS: false,
-    CREDENTIALS: 'include',
+    CREDENTIALS: 'same-origin',
     TOKEN: undefined,
     USERNAME: undefined,
     PASSWORD: undefined,

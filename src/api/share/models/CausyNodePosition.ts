@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CausyNodePosition = {
-    'x': number;
-    'y': number;
+    'x': (number | null);
+    'y': (number | null);
 };
 

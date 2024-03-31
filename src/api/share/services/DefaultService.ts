@@ -18,4 +18,25 @@ export class DefaultService {
             url: '/',
         });
     }
+    /**
+     * Get Legal Document
+     * Get document by path.
+     * @param docPath
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getLegalDocumentDocumentsDocPathGet(
+        docPath: string,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/documents/{doc_path}',
+            path: {
+                'doc_path': docPath,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
 }

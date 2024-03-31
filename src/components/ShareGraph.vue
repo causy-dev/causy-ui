@@ -1,6 +1,9 @@
 <script  lang="ts">
 import {useCurrentGraphStore} from "@/stores/graph";
-import {V1Service} from "@/api/share";
+import {OpenAPI, ShareCreatedResponse, V1Service} from "@/api/share";
+import type {CreateShareRequest, CausyModel_Input} from "@/api/share";
+import {toRaw} from "vue";
+import moment from 'moment';
 
 interface availableSharingDuration {
   name: string;
@@ -9,6 +12,7 @@ interface availableSharingDuration {
 interface ShareGraphData {
   availableSharingDurations: availableSharingDuration[];
   selectedSharingDuration: number | null;
+  shareResult: ShareCreatedResponse | null;
 }
 
 export default {
@@ -24,21 +28,49 @@ export default {
     isActive(duration: availableSharingDuration) {
       return this.selectedSharingDuration === duration.value;
     },
-
     share() {
       var graph = useCurrentGraphStore();
-      console.log(graph.currentGraph);
-      V1Service.createShareV1SharePost({
-        graph: graph.currentGraph,
-        duration: this.selectedSharingDuration,
-      }).then((response) => {
-        console.log(response);
-        this.$emit('toggleShare');
-      });
+      console.log("share me baby")
+      const graphData: CausyModel_Input = toRaw(graph.currentGraph);
+      const duration = this.selectedSharingDuration;
+      console.log(duration);
+
+      // Calculate valid until date
+      let validUntil: string = null;
+      if (duration !== null)
+      {
+        let date = moment();
+        date.add(duration, 'days');
+        validUntil = date.toISOString();
+      }
+
+      const requestBody: CreateShareRequest = {
+        data: graphData,
+        valid_until: validUntil
+      };
+      console.log(requestBody);
+      try {
+        V1Service.createShareV1SharePost(requestBody).then((response) => {
+          console.log("ok");
+          console.log(response);
+          this.shareResult = response;
+        }).catch((error) => {
+          console.log("error");
+          console.log(error);
+        });
+
+      } catch (error) {
+        console.log("error");
+        console.log(error);
+      }
+
     }
 
   },
   computed: {
+    OpenAPI() {
+      return OpenAPI
+    }
 
   },
   data(): ShareGraphData {
@@ -66,6 +98,7 @@ export default {
         },
       ],
       selectedSharingDuration: null,
+      shareResult: null,
     }
   },
 
@@ -74,17 +107,25 @@ export default {
 
 <template>
   <div class="share">
-    <div class="share-content">
+    <div class="share-content" v-if="shareResult">
+      <h4>Your model has been published</h4>
+      <p>You can now share this link with others:</p>
+      <input class="copy-input" type="text" :value="OpenAPI.BASE + '/share/' + shareResult.share_id" readonly>
+      <div class="button-group">
+        <button type="button" class="button button-secondary medium" @click="$emit('toggleShare')">Close</button>
+      </div>
+    </div>
+    <div class="share-content" v-else>
       <h4>Share this model</h4>
-      <form>
+      <form @submit.prevent="share">
         <label for="share-duration">Share for</label>
         <div id="share-duration" class="toggle-group" :key="selectedSharingDuration">
         <button type="button" class="label small" :key="duration" v-for="duration in availableSharingDurations" @click="updateSelectedSharingDuration(duration)" :aria-label="'Share for ' + duration.name" :class="{ active: isActive(duration) }">{{duration.name}}</button>        </div>
-        <span class="legal">By sharing this model, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</span>
+        <span class="legal">By sharing this model, you agree to our <a :href="OpenAPI.BASE + '/documents/tos'">Terms of Service</a>.</span>
 
         <div class="button-group">
-          <button class="button medium" @click="share">Share</button>
-          <button class="button button-secondary medium" @click="$emit('toggleShare')">Cancel</button>
+          <button class="button medium">Share</button>
+          <button type="button" class="button button-secondary medium" @click="$emit('toggleShare')">Cancel</button>
         </div>
       </form>
     </div>
@@ -226,6 +267,10 @@ export default {
 
 .button-group button:first-child {
   margin-left: 0;
+}
+
+.copy-input {
+  width: 300px;
 }
 
 

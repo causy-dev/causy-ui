@@ -1,49 +1,48 @@
 <script lang="ts">
 import Graph from "@/components/Graph.vue";
-import {ApiService} from "@/api/ui";
+import {V1Service} from "@/api/share";
 import PipelineStepsSidebar from "@/components/PipelineStepsSidebar.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
-import ShareGraph from "@/components/ShareGraph.vue";
 import {useCurrentGraphStore} from "@/stores/graph";
 import type {CausyModel} from "@/api/ui";
+import type {ShareResponse} from "@/api/share";
+
 
 interface DataProps {
   graph: CausyModel | null;
+  shareDetails: ShareResponse;
   sidebarVisible: boolean;
-  shareVisible: boolean;
+  graphShareId: string | null;
 }
 export default {
-  name: "HomeView",
+  name: "ShareView",
   components: {
-    ShareGraph,
     LoadingSpinner,
     PipelineStepsSidebar,
     Graph,
   },
-
   mounted() {
+    this.graphShareId = this.$route.params.id;
     const graphStore = useCurrentGraphStore();
-    ApiService.getModelApiV1ModelGet().then(response => {
-      this.graph = response;
+    V1Service.getShareV1ShareShareIdGet(this.graphShareId).then(response => {
+      this.graph = response.data;
+      this.shareDetails = response;
+      console.log(this.graph);
       graphStore.setGraph(this.graph);
       console.log(graphStore.currentGraph);
     });
-
-
   },
   methods: {
     toggleSidebar() {
       this.sidebarVisible = !this.sidebarVisible;
-    },
-    toggleShare() {
-      this.shareVisible = !this.shareVisible;
     },
   },
   data(): DataProps {
     return {
       graph: null,
       sidebarVisible: false,
-      shareVisible: false,
+      graphShareId: null,
+      shareDetails: null,
     };
   },
 }
@@ -54,12 +53,11 @@ export default {
     <div class="graph-name" v-if="graph">
       <a class="label medium" @click="toggleSidebar()">{{graph.algorithm.reference}}</a>
     </div>
-    <div class="align-right">
-      <a class="label medium" @click="toggleShare()">Share</a>
+    <div class="align-right" v-if="shareDetails">
+      <span class="medium">Available until: {{shareDetails.valid_until}}</span>
     </div>
   </header>
   <PipelineStepsSidebar v-if="graph && sidebarVisible" />
-  <ShareGraph v-if="graph && shareVisible" @toggleShare="toggleShare()" />
   <main v-if="graph !== null">
     <Graph :graph="graph" />
   </main>

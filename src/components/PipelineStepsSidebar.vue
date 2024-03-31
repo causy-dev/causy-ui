@@ -1,10 +1,17 @@
 <script lang="ts">
 import type {CausyModel} from "@/api/ui";
+import {useCurrentGraphStore} from "@/stores/graph";
 
 export default {
   name: "PipelineStepsSidebar",
-  props: {
-    graph: Object as () => CausyModel,
+  mounted() {
+    const graphStore = useCurrentGraphStore();
+    this.graph = graphStore.currentGraph;
+  },
+  data() {
+    return {
+      graph: null as CausyModel | null,
+    };
   },
 };
 
@@ -14,10 +21,13 @@ export default {
 <aside>
   <div class="sidebar">
     <div class="sidebar-header">
+
       <div class="sidebar-header-title">Pipeline Steps</div>
     </div>
     <section class="sidebar-content">
+
       <ul class="algorithm-steps" v-if="graph">
+
         <li v-for="step in graph.steps">
           {{step.step}} <span class="label small">{{step.actions.length}}</span>
         </li>

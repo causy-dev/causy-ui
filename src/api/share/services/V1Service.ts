@@ -22,7 +22,7 @@ export class V1Service {
     ): CancelablePromise<ShareCreatedResponse> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/v1/share/',
+            url: '/v1/share',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -44,7 +44,7 @@ export class V1Service {
     ): CancelablePromise<ShareResponse> {
         return __request(OpenAPI, {
             method: 'PATCH',
-            url: '/v1/share/{share_id}/',
+            url: '/v1/share/{share_id}',
             path: {
                 'share_id': shareId,
             },
@@ -67,7 +67,7 @@ export class V1Service {
     ): CancelablePromise<ShareResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/v1/share/{share_id}/',
+            url: '/v1/share/{share_id}',
             path: {
                 'share_id': shareId,
             },
@@ -90,7 +90,7 @@ export class V1Service {
     ): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/v1/share/{share_id}/',
+            url: '/v1/share/{share_id}',
             path: {
                 'share_id': shareId,
             },
