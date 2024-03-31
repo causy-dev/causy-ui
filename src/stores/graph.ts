@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import type { CausyModel } from '@/api/models/CausyModel'
-import {ApiService} from "@/api";
+import {ApiService} from "@/api/ui/services/ApiService";
+import type {CausyModel} from "@/api/ui";
 export const useCurrentGraphStore = defineStore("currentGraph",{
    state: () => ({
-        graph: CausyModel,
+        graph: null as CausyModel | null,
     }),
     getters: {
         graph: (state) => state.graph,

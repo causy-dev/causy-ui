@@ -1,10 +1,10 @@
 <script lang="ts">
-
+import type {CausyModel} from "@/api/ui";
 
 export default {
   name: "PipelineStepsSidebar",
   props: {
-    graph: Object,
+    graph: Object as () => CausyModel,
   },
 };
 
@@ -17,8 +17,8 @@ export default {
       <div class="sidebar-header-title">Pipeline Steps</div>
     </div>
     <section class="sidebar-content">
-      <ul class="algorithm-steps">
-        <li v-for="step in this.graph.steps">
+      <ul class="algorithm-steps" v-if="graph">
+        <li v-for="step in graph.steps">
           {{step.step}} <span class="label small">{{step.actions.length}}</span>
         </li>
       </ul>

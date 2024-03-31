@@ -24,7 +24,7 @@ export default {
 
   <Handle id="left" :position="Position.Left" />
  <div class="node">
-   {{ this.label }}
+   {{ label }}
  </div>
   <Handle id="right" :position="Position.Right"/>
 

@@ -1,12 +1,11 @@
 <script lang="ts">
 import {MarkerType, Position, VueFlow} from '@vue-flow/core';
 import { MiniMap } from '@vue-flow/minimap'
+import type {EdgeProps, ConnectionHandle} from  '@vue-flow/core';
 
 import {Layout} from "webcola";
-import {defineComponent} from "vue";
 import Node from "@/components/Node.vue";
-import {ApiService} from "@/api/ui";
-import type {CausyModel} from "@/api/ui";
+import type {CausyEdge, CausyModel} from "@/api/ui";
 import('@vue-flow/core/dist/style.css');
 import('../assets/vueflow.css');
 
@@ -30,7 +29,7 @@ export default {
   },
   methods: {
 
-    findBestHandle(from, to) {
+    findBestHandle(from: ConnectionHandle, to: ConnectionHandle) {
 
       // find the relative position of the two nodes
       let relative_position = {
@@ -56,7 +55,7 @@ export default {
       }
     },
 
-    deduplicateUndirectedEdges(edges) {
+    deduplicateUndirectedEdges(edges: CausyEdge[]) {
       let deduplicated_edges = [];
       let edge_ids = new Set();
       for(let edge of edges) {
@@ -72,7 +71,7 @@ export default {
 
     },
 
-    calculateLayout(edges, nodes) {
+    calculateLayout(edges: CausyEdge[], nodes: any) {
       let node_id_to_number = {};
       let node_number_to_id = {};
       let node_number = 0;
@@ -127,9 +126,13 @@ export default {
   },
 
   computed: {
-    elements() {
+    elements(): EdgeProps[] {
       let elements = [];
-      console.log(this.graph);
+
+      if(this.graph === null || this.graph === undefined || this.graph.nodes === undefined || this.graph.edges === undefined) {
+        return elements;
+      }
+
       let layout = this.calculateLayout(this.graph.edges, this.graph.nodes);
       for (const node_id in this.graph.nodes) {
         const node = this.graph.nodes[node_id];

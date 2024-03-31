@@ -16,7 +16,7 @@ export default defineComponent({
   <div class="loading-wrapper">
     <div class="loading">
       <div class="loading-spinner"></div>
-      <div class="loading-text">{{ this.text }}</div>
+      <div class="loading-text">{{ text }}</div>
     </div>
   </div>
 </template>

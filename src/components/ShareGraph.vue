@@ -1,25 +1,46 @@
 <script  lang="ts">
+import {useCurrentGraphStore} from "@/stores/graph";
+import {V1Service} from "@/api/share";
 
+interface availableSharingDuration {
+  name: string;
+  value: number | null;
+}
+interface ShareGraphData {
+  availableSharingDurations: availableSharingDuration[];
+  selectedSharingDuration: number | null;
+}
 
 export default {
   name: "ShareGraph",
   props: {
   },
-  emits: ['toggleShare'],
+  emits: ['toggleShare', 'share'],
   methods: {
-    updateSelectedSharingDuration(duration) {
+    updateSelectedSharingDuration(duration: availableSharingDuration) {
       this.selectedSharingDuration = duration.value;
       this.$forceUpdate();
     },
-    isActive(duration) {
+    isActive(duration: availableSharingDuration) {
       return this.selectedSharingDuration === duration.value;
     },
+
+    share() {
+      var graph = useCurrentGraphStore();
+      V1Service.createShareV1SharePost({
+        graph: graph.graph,
+        duration: this.selectedSharingDuration,
+      }).then((response) => {
+        console.log(response);
+        this.$emit('toggleShare');
+      });
+    }
 
   },
   computed: {
 
   },
-  data() {
+  data(): ShareGraphData {
     return {
       availableSharingDurations: [
         {
@@ -57,12 +78,12 @@ export default {
       <form>
         <label for="share-duration">Share for</label>
         <div id="share-duration" class="toggle-group" :key="selectedSharingDuration">
-        <button type="button" class="label small" :key="duration" v-for="duration in this.availableSharingDurations" @click="updateSelectedSharingDuration(duration)" :aria-label="'Share for ' + duration.name" :class="{ active: isActive(duration) }">{{duration.name}}</button>        </div>
+        <button type="button" class="label small" :key="duration" v-for="duration in availableSharingDurations" @click="updateSelectedSharingDuration(duration)" :aria-label="'Share for ' + duration.name" :class="{ active: isActive(duration) }">{{duration.name}}</button>        </div>
         <span class="legal">By sharing this model, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</span>
 
         <div class="button-group">
-          <button class="button medium">Share</button>
-          <button class="button button-secondary medium" @click="this.$emit('toggleShare')">Cancel</button>
+          <button class="button medium" @click="share">Share</button>
+          <button class="button button-secondary medium" @click="$emit('toggleShare')">Cancel</button>
         </div>
       </form>
     </div>

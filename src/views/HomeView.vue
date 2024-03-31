@@ -4,6 +4,13 @@ import {ApiService} from "@/api/ui";
 import PipelineStepsSidebar from "@/components/PipelineStepsSidebar.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import ShareGraph from "@/components/ShareGraph.vue";
+import type {CausyModel} from "@/api/ui";
+
+interface DataProps {
+  graph: CausyModel | null;
+  sidebarVisible: boolean;
+  shareVisible: boolean;
+}
 export default {
   name: "HomeView",
   components: {
@@ -26,7 +33,7 @@ export default {
       this.shareVisible = !this.shareVisible;
     },
   },
-  data() {
+  data(): DataProps {
     return {
       graph: null,
       sidebarVisible: false,
@@ -38,16 +45,16 @@ export default {
 
 <template>
   <header>
-    <div class="graph-name" v-if="this.graph">
-      <a class="label medium" @click="toggleSidebar()">{{this.graph.algorithm.reference}}</a>
+    <div class="graph-name" v-if="graph">
+      <a class="label medium" @click="toggleSidebar()">{{graph.algorithm.reference}}</a>
     </div>
     <div class="align-right">
       <a class="label medium" @click="toggleShare()">Share</a>
     </div>
   </header>
-  <PipelineStepsSidebar v-if="this.graph && this.sidebarVisible" />
-  <ShareGraph v-if="this.graph && this.shareVisible" @toggleShare="toggleShare()" />
-  <main v-if="this.graph !== null">
+  <PipelineStepsSidebar v-if="graph && sidebarVisible" />
+  <ShareGraph v-if="graph && shareVisible" @toggleShare="toggleShare()" />
+  <main v-if="graph !== null">
     <Graph :graph="graph" />
   </main>
   <main v-else>
