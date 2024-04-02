@@ -174,11 +174,22 @@ export default {
             });
         let targetHandleStyle = MarkerType.null;
         let sourceHandleStyle = MarkerType.null;
+        let edge_label = null
+        let edge_value = null;
 
         if(edge.value.edge_type == "DIRECTED") {
           targetHandleStyle = MarkerType.ArrowClosed;
+
+          if("direct_effect" in edge.value.metadata) {
+            edge_value = edge.value.metadata.direct_effect;
+            edge_label = "Effect: "+edge.value.metadata.direct_effect.toFixed(4).toString()+" ("+edge.value.metadata.correlation.toFixed(4).toString()+")";
+          } else if("correlation" in edge.value.metadata) {
+            edge_label = "Correlation: "+edge.value.metadata.correlation.toFixed(4).toString();
+            edge_value = edge.value.metadata.correlation;
+          }
+
           console.log(edge.value.metadata.correlation);
-          if(edge.value.metadata.correlation < 0) {
+          if(edge_value !== null && edge_value < 0) {
             stroke = '#f00000';
           } else {
             stroke = '#0f0fff';
@@ -188,13 +199,16 @@ export default {
         } else if (edge.value.edge_type == "BIDIRECTED") {
           targetHandleStyle = MarkerType.ArrowClosed;
           sourceHandleStyle = MarkerType.ArrowClosed;
+          if("correlation" in edge.value.metadata) {
+            edge_label = "Correlation: "+edge.value.metadata.correlation.toFixed(4).toString();
+          }
         }
 
         elements.push({
           id: edge.from.id + edge.to.id,
           source: edge.from.id,
           target: edge.to.id,
-          label: edge.value.metadata.correlation.toFixed(4).toString(),
+          label: edge_label,
           markerEnd: targetHandleStyle,
           markerStart: sourceHandleStyle,
           targetHandle: handlePositions[1],

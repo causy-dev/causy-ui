@@ -124,7 +124,7 @@ export default {
         <span class="legal">By sharing this model, you agree to our <a :href="OpenAPI.BASE + '/documents/tos'">Terms of Service</a>.</span>
 
         <div class="button-group">
-          <button class="button medium">Share</button>
+          <button class="button medium button-primary">Share</button>
           <button type="button" class="button button-secondary medium" @click="$emit('toggleShare')">Cancel</button>
         </div>
       </form>
@@ -255,6 +255,16 @@ export default {
 }
 
 .button:hover {
+  background-color: #008B8BFF;
+  color: #fff;
+}
+
+.button.button-primary {
+  background-color: #008B8BFF;
+  color: #fff;
+}
+
+.button.button-primary:hover {
   background-color: #008B8BFF;
   color: #fff;
 }
