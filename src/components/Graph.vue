@@ -28,7 +28,6 @@ export default {
     }
   },
   methods: {
-
     findBestHandle(from: ConnectionHandle, to: ConnectionHandle) {
 
       // find the relative position of the two nodes
@@ -36,7 +35,6 @@ export default {
         x: to.x - from.x,
         y: to.y - from.y,
       };
-
       if(relative_position.x === 0 && relative_position.y === 0) {
         return ["top", "bottom"];
       }
@@ -158,16 +156,16 @@ export default {
         }
 
         let handlePositions = this.findBestHandle(
-            {
-              id: "",
-              nodeId: "",
-              type: undefined,
-              x: layout[edge.from.id].x, y: layout[edge.from.id].y, width: 200, height: 100},
-            {
-              id: "",
-              nodeId: "",
-              type: undefined,x: layout[edge.to.id].x, y: layout[edge.to.id].y, width: 200, height: 100
-            });
+        {
+          id: "",
+          nodeId: "",
+          type: undefined,
+          x: layout[edge.from.id].x, y: layout[edge.from.id].y, width: 200, height: 100},
+        {
+          id: "",
+          nodeId: "",
+          type: undefined,x: layout[edge.to.id].x, y: layout[edge.to.id].y, width: 200, height: 100
+        });
         let targetHandleStyle = MarkerType.null;
         let sourceHandleStyle = MarkerType.null;
         let edge_label = null

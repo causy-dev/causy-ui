@@ -2,10 +2,10 @@
 import Graph from "@/components/Graph.vue";
 import {ApiService} from "@/api/ui";
 import PipelineStepsSidebar from "@/components/PipelineStepsSidebar.vue";
-import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import ShareGraph from "@/components/ShareGraph.vue";
 import {useCurrentGraphStore} from "@/stores/graph";
 import type {CausyModel} from "@/api/ui";
+import {Header, Spinner} from "@causy-dev/causy-components";
 
 interface DataProps {
   graph: CausyModel | null;
@@ -16,9 +16,10 @@ export default {
   name: "HomeView",
   components: {
     ShareGraph,
-    LoadingSpinner,
+    Spinner,
     PipelineStepsSidebar,
     Graph,
+    Header
   },
 
   mounted() {
@@ -50,37 +51,43 @@ export default {
 </script>
 
 <template>
-  <header>
+  <Header class="header">
     <div class="graph-name" v-if="graph">
       <a class="label medium" @click="toggleSidebar()">{{graph.algorithm.reference}}</a>
     </div>
     <div class="align-right">
       <a class="label medium" @click="toggleShare()">Share</a>
     </div>
-  </header>
+  </Header>
   <PipelineStepsSidebar v-if="graph && sidebarVisible" />
   <ShareGraph v-if="graph && shareVisible" @toggleShare="toggleShare()" />
   <main v-if="graph !== null">
     <Graph :graph="graph" />
   </main>
   <main v-else>
-    <LoadingSpinner text="Loading model..." />
+    <div class="loading">
+      <Spinner>Loading model...</Spinner>
+    </div>
   </main>
 </template>
 
 <style scoped>
-header {
+.loading {
   display: flex;
-  justify-content: left;
-  padding: 0 2rem;
+  flex-direction: column;
   align-items: center;
-  height: 4rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 9999;
-  width: 100%;
-  position: fixed;
-  background-color: #008B8BFF;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
 }
+
+.header {
+  padding: 0 2rem;
+  height: 4rem;
+}
+
 .label {
   font-family: "Open-Sans-Regular", sans-serif;
   font-weight: bold;
