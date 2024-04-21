@@ -1,7 +1,5 @@
 <script lang="ts">
-import {defineComponent} from 'vue'
 import {Handle, Position} from "@vue-flow/core";
-
 export default {
   name: "Node",
   components: {Handle},
@@ -21,13 +19,11 @@ export default {
 
 <template>
   <Handle id="top" :position="Position.Top"/>
-
   <Handle id="left" :position="Position.Left" />
- <div class="node">
-   {{ label }}
- </div>
+  <div class="node">
+    {{ label }}
+  </div>
   <Handle id="right" :position="Position.Right"/>
-
   <Handle id="bottom" :position="Position.Bottom" />
 </template>
 
@@ -38,8 +34,6 @@ export default {
   max-width: 250px;
   border-radius: 4px;
   text-align: center; color: #000;
-  padding: 10px;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding: 15px 10px;
 }
 </style>

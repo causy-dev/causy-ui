@@ -1,14 +1,12 @@
 <script lang="ts">
-import {MarkerType, Position, VueFlow} from '@vue-flow/core';
-import { MiniMap } from '@vue-flow/minimap'
-import type {EdgeProps, ConnectionHandle} from  '@vue-flow/core';
+import {MarkerType} from '@vue-flow/core';
+import type {ConnectionHandle} from  '@vue-flow/core';
 
 import {Layout} from "webcola";
-import Node from "@/components/Node.vue";
 import type {CausyEdge, CausyModel} from "@/api/ui";
+import { Graph as CausyGraph} from "@causy-dev/causy-components";
 import('@vue-flow/core/dist/style.css');
 import('../assets/vueflow.css');
-
 type NodePosition = {
   x: number;
   y: number;
@@ -16,9 +14,7 @@ type NodePosition = {
 
 export default {
   components: {
-    VueFlow,
-    Node,
-    MiniMap
+    CausyGraph
   },
   name: 'Graph',
   props: {
@@ -232,13 +228,7 @@ export default {
 <template>
   <main>
     <div style="height: 100%;">
-      <VueFlow v-model="elements"  fit-view-on-init>
-        <template #node-custom="{ label }">
-          <Node :label="label as string" />
-        </template>
-
-        <MiniMap  />
-      </VueFlow>
+      <CausyGraph :elements="elements" />
     </div>
   </main>
 </template>
