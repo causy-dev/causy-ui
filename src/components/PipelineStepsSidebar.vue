@@ -25,9 +25,7 @@ export default {
       <div class="sidebar-header-title">Pipeline Steps</div>
     </div>
     <section class="sidebar-content">
-
       <ul class="algorithm-steps" v-if="graph">
-
         <li v-for="step in graph.steps">
           {{step.step}} <span class="label small">{{step.actions.length}}</span>
         </li>
