@@ -26,8 +26,8 @@ export default {
     </div>
     <section class="sidebar-content">
       <ul class="algorithm-steps" v-if="graph">
-        <li v-for="step in graph.steps">
-          {{step.step}} <span class="label small">{{step.actions.length}}</span>
+        <li v-for="step in graph.action_history">
+          {{step.name}} <span class="label small">{{step.actions.length}}</span> <span class="label small">{{Math.round(step.duration)}}</span>
         </li>
       </ul>
     </section>

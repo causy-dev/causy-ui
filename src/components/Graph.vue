@@ -3,7 +3,7 @@ import {MarkerType} from '@vue-flow/core';
 import type {ConnectionHandle} from  '@vue-flow/core';
 
 import {Layout} from "webcola";
-import type {CausyEdge, CausyModel} from "@/api/ui";
+import type {EdgeInterface, CausyExtendedResult} from "@/api/ui";
 import { Graph as CausyGraph} from "@causy-dev/causy-components";
 import('@vue-flow/core/dist/style.css');
 import('../assets/vueflow.css');
@@ -18,7 +18,7 @@ export default {
   },
   name: 'Graph',
   props: {
-    graph: Object as () => CausyModel,
+    graph: Object as () => CausyExtendedResult,
   },
 
   data() {
@@ -29,7 +29,6 @@ export default {
   },
   methods: {
     findBestHandle(from: ConnectionHandle, to: ConnectionHandle) {
-
       // find the relative position of the two nodes
       let relative_position = {
         x: to.x - from.x,
@@ -53,12 +52,12 @@ export default {
       }
     },
 
-    deduplicateUndirectedEdges(edges: CausyEdge[]) {
+    deduplicateUndirectedEdges(edges: EdgeInterface[]) {
       let deduplicated_edges = [];
       let edge_ids = new Set();
       for(let edge of edges) {
-        let edge_id_ft = edge.from.id + edge.to.id;
-        let edge_id_tf = edge.to.id + edge.from.id;
+        let edge_id_ft = edge.u.id + edge.v.id;
+        let edge_id_tf = edge.v.id + edge.u.id;
         if(edge_ids.has(edge_id_ft) || edge_ids.has(edge_id_tf)) {
           continue;
         }
@@ -69,7 +68,7 @@ export default {
 
     },
 
-    calculateLayout(edges: CausyEdge[], nodes: any) : Record<string, NodePosition> {
+    calculateLayout(edges: EdgeInterface[], nodes: any) : Record<string, NodePosition> {
       let node_id_to_number: Record<string, number>  = {};
       let node_number_to_id: Record<number, string> = {};
       let node_number: number = 0;
@@ -81,18 +80,18 @@ export default {
       let links: Link[] = [];
 
       for(let edge of edges) {
-        if(!(edge.from.id in node_id_to_number)) {
-          node_id_to_number[edge.from.id] = node_number;
-          node_number_to_id[node_number] = edge.from.id;
+        if(!(edge.u.id in node_id_to_number)) {
+          node_id_to_number[edge.u.id] = node_number;
+          node_number_to_id[node_number] = edge.u.id;
           node_number += 1;
         }
-        if(!(edge.to.id in node_id_to_number)) {
-          node_id_to_number[edge.to.id] = node_number;
-          node_number_to_id[node_number] = edge.to.id;
+        if(!(edge.v.id in node_id_to_number)) {
+          node_id_to_number[edge.v.id] = node_number;
+          node_number_to_id[node_number] = edge.v.id;
           node_number += 1;
         }
 
-        links.push({source: node_id_to_number[edge.from.id], target: node_id_to_number[edge.to.id]})
+        links.push({source: node_id_to_number[edge.u.id], target: node_id_to_number[edge.v.id]})
 
       }
 
@@ -151,7 +150,7 @@ export default {
         let stroke = '#333';
         let isAnimated = false;
 
-        if(edge.value.metadata === undefined) {
+        if(edge.metadata === undefined) {
           continue;
         }
 
@@ -160,29 +159,29 @@ export default {
           id: "",
           nodeId: "",
           type: undefined,
-          x: layout[edge.from.id].x, y: layout[edge.from.id].y, width: 200, height: 100},
+          x: layout[edge.u.id].x, y: layout[edge.u.id].y, width: 200, height: 100},
         {
           id: "",
           nodeId: "",
-          type: undefined,x: layout[edge.to.id].x, y: layout[edge.to.id].y, width: 200, height: 100
+          type: undefined,x: layout[edge.v.id].x, y: layout[edge.v.id].y, width: 200, height: 100
         });
         let targetHandleStyle = MarkerType.null;
         let sourceHandleStyle = MarkerType.null;
         let edge_label = null
         let edge_value = null;
 
-        if(edge.value.edge_type == "DIRECTED") {
+        if(edge.edge_type == "DIRECTED") {
           targetHandleStyle = MarkerType.ArrowClosed;
 
-          if("direct_effect" in edge.value.metadata) {
-            edge_value = edge.value.metadata.direct_effect;
-            edge_label = "Effect: "+edge.value.metadata.direct_effect.toFixed(4).toString()+" ("+edge.value.metadata.correlation.toFixed(4).toString()+")";
-          } else if("correlation" in edge.value.metadata) {
-            edge_label = "Correlation: "+edge.value.metadata.correlation.toFixed(4).toString();
-            edge_value = edge.value.metadata.correlation;
+          if("direct_effect" in edge.metadata) {
+            edge_value = edge.metadata.direct_effect;
+            edge_label = "Effect: "+edge.metadata.direct_effect.toFixed(4).toString()+" ("+edge.metadata.correlation.toFixed(4).toString()+")";
+          } else if("correlation" in edge.metadata) {
+            edge_label = "Correlation: "+edge.metadata.correlation.toFixed(4).toString();
+            edge_value = edge.metadata.correlation;
           }
 
-          console.log(edge.value.metadata.correlation);
+          console.log(edge.metadata.correlation);
           if(edge_value !== null && edge_value < 0) {
             stroke = '#f00000';
           } else {
@@ -190,18 +189,18 @@ export default {
           }
           isAnimated = true;
 
-        } else if (edge.value.edge_type == "BIDIRECTED") {
+        } else if (edge.edge_type == "BIDIRECTED") {
           targetHandleStyle = MarkerType.ArrowClosed;
           sourceHandleStyle = MarkerType.ArrowClosed;
-          if("correlation" in edge.value.metadata) {
-            edge_label = "Correlation: "+edge.value.metadata.correlation.toFixed(4).toString();
+          if("correlation" in edge.metadata) {
+            edge_label = "Correlation: "+edge.metadata.correlation.toFixed(4).toString();
           }
         }
 
         elements.push({
-          id: edge.from.id + edge.to.id,
-          source: edge.from.id,
-          target: edge.to.id,
+          id: edge.u.id + edge.v.id,
+          source: edge.u.id,
+          target: edge.v.id,
           label: edge_label,
           markerEnd: targetHandleStyle,
           markerStart: sourceHandleStyle,

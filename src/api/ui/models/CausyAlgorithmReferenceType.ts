@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CausyNodePosition = {
-    'x': number;
-    'y': number;
-};
-
+export enum CausyAlgorithmReferenceType {
+    FILE = 'file',
+    NAME = 'name',
+    PYTHON_MODULE = 'python_module',
+}
