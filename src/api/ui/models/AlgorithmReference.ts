@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CausyAlgorithm = {
-    type: string;
+import type { AlgorithmReferenceType } from './AlgorithmReferenceType';
+export type AlgorithmReference = {
     reference: string;
+    type: AlgorithmReferenceType;
 };
 

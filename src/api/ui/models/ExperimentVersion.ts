@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CausyNodePosition } from './CausyNodePosition';
-export type CausyNode = {
-    id: string;
+export type ExperimentVersion = {
+    version: number;
     name: string;
-    position?: (CausyNodePosition | null);
 };
 

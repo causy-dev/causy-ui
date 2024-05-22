@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CausyEdgeValue = {
-    metadata?: Record<string, any>;
-    edge_type?: string;
-};
-
+export enum AlgorithmReferenceType {
+    FILE = 'file',
+    NAME = 'name',
+    PYTHON_MODULE = 'python_module',
+}

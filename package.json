@@ -15,6 +15,7 @@
     "shareapiclient": "openapi --input https://share.dev.causy.dev/openapi.json --output src/api/share --client axios"
   },
   "dependencies": {
+    "@causy-dev/causy-components": "^0.0.10",
     "@vue-flow/controls": "^1.1.0",
     "@vue-flow/core": "^1.23.0",
     "@vue-flow/minimap": "^1.4.0",

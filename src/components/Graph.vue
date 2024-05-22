@@ -1,28 +1,31 @@
 <script lang="ts">
-import {MarkerType, Position, VueFlow} from '@vue-flow/core';
-import { MiniMap } from '@vue-flow/minimap'
-import type {EdgeProps, ConnectionHandle} from  '@vue-flow/core';
+import {MarkerType} from '@vue-flow/core';
+import type {ConnectionHandle} from  '@vue-flow/core';
 
 import {Layout} from "webcola";
-import Node from "@/components/Node.vue";
-import type {CausyEdge, CausyModel} from "@/api/ui";
+import type {EdgeInterface, CausyExtendedResult, CausyAlgorithm} from "@/api/ui";
+import { Graph as CausyGraph} from "@causy-dev/causy-components";
 import('@vue-flow/core/dist/style.css');
 import('../assets/vueflow.css');
-
 type NodePosition = {
   x: number;
   y: number;
 };
 
+String.prototype.interpolate = function(params) {
+  const names = Object.keys(params);
+  const vals = Object.values(params);
+  return new Function(...names, `return \`${this}\`;`)(...vals);
+}
+
 export default {
   components: {
-    VueFlow,
-    Node,
-    MiniMap
+    CausyGraph
   },
   name: 'Graph',
   props: {
-    graph: Object as () => CausyModel,
+    graph: Object as () => CausyExtendedResult,
+    algorithm: Object as () => CausyAlgorithm,
   },
 
   data() {
@@ -32,15 +35,12 @@ export default {
     }
   },
   methods: {
-
     findBestHandle(from: ConnectionHandle, to: ConnectionHandle) {
-
       // find the relative position of the two nodes
       let relative_position = {
         x: to.x - from.x,
         y: to.y - from.y,
       };
-
       if(relative_position.x === 0 && relative_position.y === 0) {
         return ["top", "bottom"];
       }
@@ -59,12 +59,12 @@ export default {
       }
     },
 
-    deduplicateUndirectedEdges(edges: CausyEdge[]) {
+    deduplicateUndirectedEdges(edges: EdgeInterface[]) {
       let deduplicated_edges = [];
       let edge_ids = new Set();
       for(let edge of edges) {
-        let edge_id_ft = edge.from.id + edge.to.id;
-        let edge_id_tf = edge.to.id + edge.from.id;
+        let edge_id_ft = edge.u.id + edge.v.id;
+        let edge_id_tf = edge.v.id + edge.u.id;
         if(edge_ids.has(edge_id_ft) || edge_ids.has(edge_id_tf)) {
           continue;
         }
@@ -75,7 +75,56 @@ export default {
 
     },
 
-    calculateLayout(edges: CausyEdge[], nodes: any) : Record<string, NodePosition> {
+    edgeConfigs() {
+      for (let extension of this.algorithm?.extensions || []) {
+        if (extension.name === "causy.contrib.graph_ui.GraphUIExtension") {
+          let configs = {};
+
+          for (let edge in extension.edges || []) {
+            configs[extension.edges[edge].edge_type] = extension.edges[edge];
+          }
+          return configs;
+        }
+      }
+    },
+
+    edgeConfig(edge: EdgeInterface, edgeConfigs: Record<string, any>) {
+      console.log(edgeConfigs);
+      let config = edgeConfigs[edge.edge_type.name].default_ui_config;
+      if(edgeConfigs[edge.edge_type.name].conditional_ui_configs === null) {
+        return config;
+      }
+
+      let conditionMapping = {
+        "LESS": function (edge_value, threshold) {
+          return edge_value < threshold;
+        },
+        "GREATER": function (edge_value, threshold) {
+          return edge_value > threshold;
+        },
+        "EQUAL": function (edge_value, threshold) {
+          return edge_value === threshold;
+        },
+        "NOT_EQUAL": function (edge_value, threshold) {
+          return edge_value !== threshold;
+        },
+        "LESS_EQUAL": function (edge_value, threshold) {
+          return edge_value <= threshold;
+        },
+        "GREATER_EQUAL": function (edge_value, threshold) {
+          return edge_value >= threshold;
+        },
+      };
+
+      for(let conditionalConfig of edgeConfigs[edge.edge_type.name].conditional_ui_configs) {
+        if(conditionMapping[conditionalConfig.condition_comparison](edge.metadata[conditionalConfig.condition_field], conditionalConfig.condition_value)) {
+          config = conditionalConfig.ui_config;
+        }
+      }
+      return config;
+    },
+
+    calculateLayout(edges: EdgeInterface[], nodes: any) : Record<string, NodePosition> {
       let node_id_to_number: Record<string, number>  = {};
       let node_number_to_id: Record<number, string> = {};
       let node_number: number = 0;
@@ -87,18 +136,18 @@ export default {
       let links: Link[] = [];
 
       for(let edge of edges) {
-        if(!(edge.from.id in node_id_to_number)) {
-          node_id_to_number[edge.from.id] = node_number;
-          node_number_to_id[node_number] = edge.from.id;
+        if(!(edge.u.id in node_id_to_number)) {
+          node_id_to_number[edge.u.id] = node_number;
+          node_number_to_id[node_number] = edge.u.id;
           node_number += 1;
         }
-        if(!(edge.to.id in node_id_to_number)) {
-          node_id_to_number[edge.to.id] = node_number;
-          node_number_to_id[node_number] = edge.to.id;
+        if(!(edge.v.id in node_id_to_number)) {
+          node_id_to_number[edge.v.id] = node_number;
+          node_number_to_id[node_number] = edge.v.id;
           node_number += 1;
         }
 
-        links.push({source: node_id_to_number[edge.from.id], target: node_id_to_number[edge.to.id]})
+        links.push({source: node_id_to_number[edge.u.id], target: node_id_to_number[edge.v.id]})
 
       }
 
@@ -114,8 +163,8 @@ export default {
 
       let layout = new Layout().links(links).avoidOverlaps(true);
       layout.nodes().forEach(v => {
-        v.width = 300;
-        v.height = 300;
+        v.width = 400;
+        v.height = 400;
       });
       layout.start(1000);
       let node_positions: Record<string, NodePosition> = {};
@@ -137,77 +186,60 @@ export default {
     elements(): Element[] {
       let elements: Element[] = [];
 
-      if(this.graph === null || this.graph === undefined || this.graph.nodes === undefined || this.graph.edges === undefined) {
+      if(this.graph === null || this.graph === undefined || this.graph.nodes === undefined || this.graph.edges === undefined || this.graph.algorithm === undefined || this.algorithm === undefined ) {
         return elements;
       }
 
       let layout = this.calculateLayout(this.graph.edges, this.graph.nodes);
       for (const node_id in this.graph.nodes) {
         const node = this.graph.nodes[node_id];
-        console.log(layout[node_id]);
         elements.push({
           type: "custom",
           id: node.id,
           label: node.name,
-          position:  layout[node_id],
+          position: layout[node_id],
         });
       }
 
-      for(const edge of this.deduplicateUndirectedEdges(this.graph.edges)) {
-        let stroke = '#333';
-        let isAnimated = false;
+      let edgeConfigs = this.edgeConfigs();
 
-        if(edge.value.metadata === undefined) {
+      for(const edge of this.deduplicateUndirectedEdges(this.graph.edges)) {
+        let currentEdgeConfig = this.edgeConfig(edge, edgeConfigs);
+        let stroke = currentEdgeConfig.color;
+        let isAnimated = currentEdgeConfig.animated;
+
+        let markerMapping = {
+          null: MarkerType.null,
+          "ArrowClosed": MarkerType.ArrowClosed,
+          "Arrow": MarkerType.Arrow,
+        }
+
+        let targetHandleStyle = markerMapping[currentEdgeConfig.marker_end];
+        let sourceHandleStyle = markerMapping[currentEdgeConfig.marker_start];
+
+        let edge_label = currentEdgeConfig.label.interpolate(edge.metadata);
+
+        if(edge.metadata === undefined) {
           continue;
         }
 
         let handlePositions = this.findBestHandle(
-            {
-              id: "",
-              nodeId: "",
-              type: undefined,
-              x: layout[edge.from.id].x, y: layout[edge.from.id].y, width: 200, height: 100},
-            {
-              id: "",
-              nodeId: "",
-              type: undefined,x: layout[edge.to.id].x, y: layout[edge.to.id].y, width: 200, height: 100
-            });
-        let targetHandleStyle = MarkerType.null;
-        let sourceHandleStyle = MarkerType.null;
-        let edge_label = null
-        let edge_value = null;
+        {
+          id: "",
+          nodeId: "",
+          type: undefined,
+          x: layout[edge.u.id].x, y: layout[edge.u.id].y, width: 200, height: 100},
+        {
+          id: "",
+          nodeId: "",
+          type: undefined,x: layout[edge.v.id].x, y: layout[edge.v.id].y, width: 200, height: 100
+        });
 
-        if(edge.value.edge_type == "DIRECTED") {
-          targetHandleStyle = MarkerType.ArrowClosed;
-
-          if("direct_effect" in edge.value.metadata) {
-            edge_value = edge.value.metadata.direct_effect;
-            edge_label = "Effect: "+edge.value.metadata.direct_effect.toFixed(4).toString()+" ("+edge.value.metadata.correlation.toFixed(4).toString()+")";
-          } else if("correlation" in edge.value.metadata) {
-            edge_label = "Correlation: "+edge.value.metadata.correlation.toFixed(4).toString();
-            edge_value = edge.value.metadata.correlation;
-          }
-
-          console.log(edge.value.metadata.correlation);
-          if(edge_value !== null && edge_value < 0) {
-            stroke = '#f00000';
-          } else {
-            stroke = '#0f0fff';
-          }
-          isAnimated = true;
-
-        } else if (edge.value.edge_type == "BIDIRECTED") {
-          targetHandleStyle = MarkerType.ArrowClosed;
-          sourceHandleStyle = MarkerType.ArrowClosed;
-          if("correlation" in edge.value.metadata) {
-            edge_label = "Correlation: "+edge.value.metadata.correlation.toFixed(4).toString();
-          }
-        }
 
         elements.push({
-          id: edge.from.id + edge.to.id,
-          source: edge.from.id,
-          target: edge.to.id,
+          id: edge.u.id + edge.v.id,
+          source: edge.u.id,
+          target: edge.v.id,
           label: edge_label,
           markerEnd: targetHandleStyle,
           markerStart: sourceHandleStyle,
@@ -232,13 +264,7 @@ export default {
 <template>
   <main>
     <div style="height: 100%;">
-      <VueFlow v-model="elements"  fit-view-on-init>
-        <template #node-custom="{ label }">
-          <Node :label="label as string" />
-        </template>
-
-        <MiniMap  />
-      </VueFlow>
+      <CausyGraph :elements="elements" />
     </div>
   </main>
 </template>
