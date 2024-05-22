@@ -3,7 +3,7 @@ import {MarkerType} from '@vue-flow/core';
 import type {ConnectionHandle} from  '@vue-flow/core';
 
 import {Layout} from "webcola";
-import type {EdgeInterface, CausyExtendedResult} from "@/api/ui";
+import type {EdgeInterface, CausyExtendedResult, CausyAlgorithm} from "@/api/ui";
 import { Graph as CausyGraph} from "@causy-dev/causy-components";
 import('@vue-flow/core/dist/style.css');
 import('../assets/vueflow.css');
@@ -12,6 +12,12 @@ type NodePosition = {
   y: number;
 };
 
+String.prototype.interpolate = function(params) {
+  const names = Object.keys(params);
+  const vals = Object.values(params);
+  return new Function(...names, `return \`${this}\`;`)(...vals);
+}
+
 export default {
   components: {
     CausyGraph
@@ -19,6 +25,7 @@ export default {
   name: 'Graph',
   props: {
     graph: Object as () => CausyExtendedResult,
+    algorithm: Object as () => CausyAlgorithm,
   },
 
   data() {
@@ -68,6 +75,55 @@ export default {
 
     },
 
+    edgeConfigs() {
+      for (let extension of this.algorithm?.extensions || []) {
+        if (extension.name === "causy.contrib.graph_ui.GraphUIExtension") {
+          let configs = {};
+
+          for (let edge in extension.edges || []) {
+            configs[extension.edges[edge].edge_type] = extension.edges[edge];
+          }
+          return configs;
+        }
+      }
+    },
+
+    edgeConfig(edge: EdgeInterface, edgeConfigs: Record<string, any>) {
+      console.log(edgeConfigs);
+      let config = edgeConfigs[edge.edge_type.name].default_ui_config;
+      if(edgeConfigs[edge.edge_type.name].conditional_ui_configs === null) {
+        return config;
+      }
+
+      let conditionMapping = {
+        "LESS": function (edge_value, threshold) {
+          return edge_value < threshold;
+        },
+        "GREATER": function (edge_value, threshold) {
+          return edge_value > threshold;
+        },
+        "EQUAL": function (edge_value, threshold) {
+          return edge_value === threshold;
+        },
+        "NOT_EQUAL": function (edge_value, threshold) {
+          return edge_value !== threshold;
+        },
+        "LESS_EQUAL": function (edge_value, threshold) {
+          return edge_value <= threshold;
+        },
+        "GREATER_EQUAL": function (edge_value, threshold) {
+          return edge_value >= threshold;
+        },
+      };
+
+      for(let conditionalConfig of edgeConfigs[edge.edge_type.name].conditional_ui_configs) {
+        if(conditionMapping[conditionalConfig.condition_comparison](edge.metadata[conditionalConfig.condition_field], conditionalConfig.condition_value)) {
+          config = conditionalConfig.ui_config;
+        }
+      }
+      return config;
+    },
+
     calculateLayout(edges: EdgeInterface[], nodes: any) : Record<string, NodePosition> {
       let node_id_to_number: Record<string, number>  = {};
       let node_number_to_id: Record<number, string> = {};
@@ -107,8 +163,8 @@ export default {
 
       let layout = new Layout().links(links).avoidOverlaps(true);
       layout.nodes().forEach(v => {
-        v.width = 300;
-        v.height = 300;
+        v.width = 400;
+        v.height = 400;
       });
       layout.start(1000);
       let node_positions: Record<string, NodePosition> = {};
@@ -130,25 +186,38 @@ export default {
     elements(): Element[] {
       let elements: Element[] = [];
 
-      if(this.graph === null || this.graph === undefined || this.graph.nodes === undefined || this.graph.edges === undefined) {
+      if(this.graph === null || this.graph === undefined || this.graph.nodes === undefined || this.graph.edges === undefined || this.graph.algorithm === undefined || this.algorithm === undefined ) {
         return elements;
       }
 
       let layout = this.calculateLayout(this.graph.edges, this.graph.nodes);
       for (const node_id in this.graph.nodes) {
         const node = this.graph.nodes[node_id];
-        console.log(layout[node_id]);
         elements.push({
           type: "custom",
           id: node.id,
           label: node.name,
-          position:  layout[node_id],
+          position: layout[node_id],
         });
       }
 
+      let edgeConfigs = this.edgeConfigs();
+
       for(const edge of this.deduplicateUndirectedEdges(this.graph.edges)) {
-        let stroke = '#333';
-        let isAnimated = false;
+        let currentEdgeConfig = this.edgeConfig(edge, edgeConfigs);
+        let stroke = currentEdgeConfig.color;
+        let isAnimated = currentEdgeConfig.animated;
+
+        let markerMapping = {
+          null: MarkerType.null,
+          "ArrowClosed": MarkerType.ArrowClosed,
+          "Arrow": MarkerType.Arrow,
+        }
+
+        let targetHandleStyle = markerMapping[currentEdgeConfig.marker_end];
+        let sourceHandleStyle = markerMapping[currentEdgeConfig.marker_start];
+
+        let edge_label = currentEdgeConfig.label.interpolate(edge.metadata);
 
         if(edge.metadata === undefined) {
           continue;
@@ -165,37 +234,7 @@ export default {
           nodeId: "",
           type: undefined,x: layout[edge.v.id].x, y: layout[edge.v.id].y, width: 200, height: 100
         });
-        let targetHandleStyle = MarkerType.null;
-        let sourceHandleStyle = MarkerType.null;
-        let edge_label = null
-        let edge_value = null;
 
-        if(edge.edge_type == "DIRECTED") {
-          targetHandleStyle = MarkerType.ArrowClosed;
-
-          if("direct_effect" in edge.metadata) {
-            edge_value = edge.metadata.direct_effect;
-            edge_label = "Effect: "+edge.metadata.direct_effect.toFixed(4).toString()+" ("+edge.metadata.correlation.toFixed(4).toString()+")";
-          } else if("correlation" in edge.metadata) {
-            edge_label = "Correlation: "+edge.metadata.correlation.toFixed(4).toString();
-            edge_value = edge.metadata.correlation;
-          }
-
-          console.log(edge.metadata.correlation);
-          if(edge_value !== null && edge_value < 0) {
-            stroke = '#f00000';
-          } else {
-            stroke = '#0f0fff';
-          }
-          isAnimated = true;
-
-        } else if (edge.edge_type == "BIDIRECTED") {
-          targetHandleStyle = MarkerType.ArrowClosed;
-          sourceHandleStyle = MarkerType.ArrowClosed;
-          if("correlation" in edge.metadata) {
-            edge_label = "Correlation: "+edge.metadata.correlation.toFixed(4).toString();
-          }
-        }
 
         elements.push({
           id: edge.u.id + edge.v.id,

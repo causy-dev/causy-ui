@@ -1,20 +1,32 @@
 <script lang="ts">
 import Graph from "@/components/Graph.vue";
-import {ApiService} from "@/api/ui";
 import PipelineStepsSidebar from "@/components/PipelineStepsSidebar.vue";
 import ShareGraph from "@/components/ShareGraph.vue";
 import {useCurrentGraphStore} from "@/stores/graph";
-import type {CausyModel} from "@/api/ui";
 import {Header, Spinner} from "@causy-dev/causy-components";
+import SideNavigation from "@/components/SideNavigation.vue";
+import SidebarContainer from "@/components/SidebarContainer.vue";
+import {useUIStore} from "@/stores/ui";
+import {useWorkspaceStore} from "@/stores/workspace";
+import {Workspace} from "@/api/ui";
+import ExperimentSelect from "@/components/ExperimentSelect.vue";
 
 interface DataProps {
-  graph: CausyModel | null;
   sidebarVisible: boolean;
   shareVisible: boolean;
+  activeSidebarItem: string | null;
+  graph: any;
+  algorithm: Algorithm | null;
+  workspace: Workspace | null;
+  workspaceStore: any;
+  uiStore: any;
 }
 export default {
   name: "HomeView",
   components: {
+    ExperimentSelect,
+    SidebarContainer,
+    SideNavigation,
     ShareGraph,
     Spinner,
     PipelineStepsSidebar,
@@ -22,14 +34,18 @@ export default {
     Header
   },
 
-  mounted() {
-    const graphStore = useCurrentGraphStore();
-    ApiService.getModelApiV1ModelGet().then(response => {
-      this.graph = response;
-      graphStore.setGraph(this.graph);
-      console.log(graphStore.currentGraph);
-    });
 
+  mounted() {
+    this.uiStore.fetchStatus().then(() => {
+      console.log(this.uiStore.currentStatus);
+      if (this.uiStore.currentStatus.workspace_loaded) {
+        console.log(this.workspaceStore);
+        this.workspaceStore.fetchExperiments();
+        this.workspaceStore.fetchWorkspace().then(() => {
+          this.workspace = this.workspaceStore.currentWorkspace;
+        });
+      }
+    });
 
   },
   methods: {
@@ -39,30 +55,48 @@ export default {
     toggleShare() {
       this.shareVisible = !this.shareVisible;
     },
+    handleActiveSidebarItemUpdate(activeItem) {
+      this.activeSidebarItem = activeItem;
+    },
+
   },
   data(): DataProps {
     return {
       graph: null,
-      sidebarVisible: false,
+      algorithm: null,
       shareVisible: false,
+      activeSidebarItem: null,
+      workspace: null,
+      workspaceStore: useWorkspaceStore(),
+      uiStore: useUIStore(),
     };
   },
 }
 </script>
 
 <template>
-  <Header class="header">
-    <div class="graph-name" v-if="graph">
-      <a class="label medium" @click="toggleSidebar()">{{graph.algorithm.reference}}</a>
+  <Header class="header" size="s">
+    <div class="workspace-name" v-if="workspace">
+      {{workspace.name}}
+    </div>
+    <div v-if="workspaceStore.currentExperiment" class="experiment-select-center">
+      <ExperimentSelect />
     </div>
     <div class="align-right">
       <a class="label medium" @click="toggleShare()">Share</a>
     </div>
   </Header>
-  <PipelineStepsSidebar v-if="graph && sidebarVisible" />
-  <ShareGraph v-if="graph && shareVisible" @toggleShare="toggleShare()" />
-  <main v-if="graph !== null">
-    <Graph :graph="graph" />
+  <SideNavigation @update:active="handleActiveSidebarItemUpdate" />
+  <SidebarContainer v-if="workspaceStore.currentResult && activeSidebarItem == 'steps'" title="Pipeline Steps">
+    <PipelineStepsSidebar />
+  </SidebarContainer>
+
+  <SidebarContainer v-if="graph && activeSidebarItem == 'graph'" title="Edit Preknowledge Graph">
+    hello
+  </SidebarContainer>
+  <ShareGraph v-if="this.workspaceStore.currentResult && shareVisible" @toggleShare="toggleShare()" />
+  <main v-if="this.workspaceStore.currentResult !== null && this.workspaceStore.currentAlgorithm !== null">
+    <Graph :graph="this.workspaceStore.currentResult" :algorithm="this.workspaceStore.algorithm" />
   </main>
   <main v-else>
     <div class="loading">
@@ -84,8 +118,14 @@ export default {
 }
 
 .header {
-  padding: 0 2rem;
-  height: 4rem;
+  padding: 0 1rem;
+  height: 3rem;
+}
+
+.workspace-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 .label {
@@ -131,5 +171,12 @@ a.label:focus, a.label:hover {
 .align-right {
   margin-left: auto;
 }
+
+.experiment-select-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
 
 </style>

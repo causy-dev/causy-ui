@@ -2,8 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export enum CausyAlgorithmReferenceType {
-    FILE = 'file',
-    NAME = 'name',
-    PYTHON_MODULE = 'python_module',
-}
+/**
+ * Represents a reference to a variable.
+ */
+export type VariableReference = {
+    name: string;
+    readonly type: string;
+};
+

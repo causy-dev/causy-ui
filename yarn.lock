@@ -390,10 +390,10 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
-"@causy-dev/causy-components@^0.0.8":
-  version "0.0.8"
-  resolved "https://npm.pkg.github.com/download/@causy-dev/causy-components/0.0.8/3e9e292f7a041ff7203463fcee04af429a782ce9#3e9e292f7a041ff7203463fcee04af429a782ce9"
-  integrity sha512-oBKOHpiI55jwzCN54xmrezlopLp8FzXhFUhMLZ7LlVvIHl0GcpfUGPnexxBxJEKmOCiF/LB/LcbTMo965mbYdA==
+"@causy-dev/causy-components@^0.0.10":
+  version "0.0.10"
+  resolved "https://npm.pkg.github.com/download/@causy-dev/causy-components/0.0.10/345ff6f3b7c3c99be7d5e7346057132e5457d774#345ff6f3b7c3c99be7d5e7346057132e5457d774"
+  integrity sha512-Js4sZnGb/tethvr5tyQyK0AQdKeFfvuvS5JNwLmUnNbRiMKd84qIaMWLHCWb7Ncm+1bEXfnpwGghvQq3mkLKog==
   dependencies:
     "@storybook/vue3-vite" "^8.0.5"
     "@vue-flow/core" "^1.33.5"

@@ -3,10 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ExitConditionInterface } from './ExitConditionInterface';
-import type { PipelineStepInterface } from './PipelineStepInterface';
+import type { VariableReference } from './VariableReference';
 export type LogicStepInterface = {
-    pipeline_steps?: (Array<PipelineStepInterface> | null);
+    pipeline_steps?: null;
     exit_condition?: (ExitConditionInterface | null);
+    display_name?: (string | VariableReference | null);
     readonly name: string;
 };
 

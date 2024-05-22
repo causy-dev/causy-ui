@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ComparisonSettings = {
-    min?: number;
-    max?: number;
-    readonly name: string;
+export type ExperimentVersion = {
+    version: number;
+    name: string;
 };
 

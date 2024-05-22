@@ -8,5 +8,7 @@
  */
 export type EdgeTypeInterface = {
     name: string;
+    IS_DIRECTED?: boolean;
+    STR_REPRESENTATION?: string;
 };
 

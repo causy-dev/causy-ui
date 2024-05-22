@@ -3,7 +3,7 @@ import Graph from "@/components/Graph.vue";
 import {V1Service} from "@/api/share";
 import PipelineStepsSidebar from "@/components/PipelineStepsSidebar.vue";
 import {useCurrentGraphStore} from "@/stores/graph";
-import type {CausyModel} from "@/api/ui";
+import type {ExtendedResult as CausyModel } from "@/api/ui" ;
 import type {ShareResponse} from "@/api/share";
 import {Header, Spinner} from "@causy-dev/causy-components";
 
@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-  <Header class="header">
+  <Header class="header" size="s">
     <div class="graph-name" v-if="graph">
       <a class="label medium" @click="toggleSidebar()">{{graph.algorithm.reference}}</a>
     </div>

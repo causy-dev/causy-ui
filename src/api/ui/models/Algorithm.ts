@@ -2,14 +2,14 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CausyExtension } from './CausyExtension';
 import type { EdgeTypeInterface } from './EdgeTypeInterface';
+import type { ExtensionInterface } from './ExtensionInterface';
 import type { LogicStepInterface } from './LogicStepInterface';
-import type { PipelineStepInterface } from './PipelineStepInterface';
-export type CausyAlgorithm = {
+export type Algorithm = {
     name: string;
-    pipeline_steps: Array<(PipelineStepInterface | LogicStepInterface)>;
+    pipeline_steps: Array<LogicStepInterface>;
     edge_types: Array<EdgeTypeInterface>;
-    extensions?: (Array<CausyExtension> | null);
+    extensions?: (Array<ExtensionInterface> | null);
+    variables?: null;
 };
 

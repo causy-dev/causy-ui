@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CausyExtension = {
-    readonly name: string;
-};
-
+export enum AlgorithmReferenceType {
+    FILE = 'file',
+    NAME = 'name',
+    PYTHON_MODULE = 'python_module',
+}

@@ -7,5 +7,6 @@ export type ActionHistoryStep = {
     name: string;
     duration?: (number | null);
     actions?: (Array<TestResult> | null);
+    steps?: (Array<ActionHistoryStep> | null);
 };
 
