@@ -8,8 +8,7 @@
  * :param pipeline: the name of the pipeline used
  */
 export type Experiment = {
-    pipeline: string;
-    data_loader: string;
-    variables?: (Record<string, any> | null);
-};
-
+  pipeline: string
+  data_loader: string
+  variables?: Record<string, any> | null
+}

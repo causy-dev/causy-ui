@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AlgorithmReferenceType } from './AlgorithmReferenceType';
+import type { AlgorithmReferenceType } from './AlgorithmReferenceType'
 export type AlgorithmReference = {
-    reference: string;
-    type: AlgorithmReferenceType;
-};
-
+  reference: string
+  type: AlgorithmReferenceType
+}

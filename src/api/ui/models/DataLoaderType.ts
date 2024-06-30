@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export enum DataLoaderType {
-    DYNAMIC = 'dynamic',
-    JSON = 'json',
-    JSONL = 'jsonl',
+  DYNAMIC = 'dynamic',
+  JSON = 'json',
+  JSONL = 'jsonl'
 }

@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ExtensionInterface = {
-    readonly name: string;
-};
-
+  readonly name: string
+}

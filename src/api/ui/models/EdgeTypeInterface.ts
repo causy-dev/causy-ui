@@ -7,8 +7,7 @@
  * An edge type is defined by a name
  */
 export type EdgeTypeInterface = {
-    name: string;
-    IS_DIRECTED?: boolean;
-    STR_REPRESENTATION?: string;
-};
-
+  name: string
+  IS_DIRECTED?: boolean
+  STR_REPRESENTATION?: string
+}

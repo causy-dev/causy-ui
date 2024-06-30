@@ -2,11 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CausyEdgeValue } from './CausyEdgeValue';
-import type { CausyNode } from './CausyNode';
+import type { CausyEdgeValue } from './CausyEdgeValue'
+import type { CausyNode } from './CausyNode'
 export type CausyEdge_Output = {
-    from: CausyNode;
-    to: CausyNode;
-    value: CausyEdgeValue;
-};
-
+  from: CausyNode
+  to: CausyNode
+  value: CausyEdgeValue
+}

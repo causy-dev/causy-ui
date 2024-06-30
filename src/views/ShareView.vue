@@ -1,61 +1,60 @@
 <script lang="ts">
-import Graph from "@/components/Graph.vue";
-import {V1Service} from "@/api/share";
-import PipelineStepsSidebar from "@/components/PipelineStepsSidebar.vue";
-import {useCurrentGraphStore} from "@/stores/graph";
-import type {ExtendedResult as CausyModel } from "@/api/ui" ;
-import type {ShareResponse} from "@/api/share";
-import {Header, Spinner} from "@causy-dev/causy-components";
-
+import Graph from '@/components/Graph.vue'
+import { V1Service } from '@/api/share'
+import PipelineStepsSidebar from '@/components/sidebars/PipelineStepsSidebar.vue'
+import { useCurrentGraphStore } from '@/stores/graph'
+import type { ExtendedResult as CausyModel } from '@/api/ui'
+import type { ShareResponse } from '@/api/share'
+import { Header, Spinner } from '@causy-dev/causy-components'
 
 interface DataProps {
-  graph: CausyModel | null;
-  shareDetails: ShareResponse;
-  sidebarVisible: boolean;
-  graphShareId: string | null;
+  graph: CausyModel | null
+  shareDetails: ShareResponse
+  sidebarVisible: boolean
+  graphShareId: string | null
 }
 export default {
-  name: "ShareView",
+  name: 'ShareView',
   components: {
     Header,
     Spinner,
     PipelineStepsSidebar,
-    Graph,
+    Graph
   },
   mounted() {
-    this.graphShareId = this.$route.params.id;
-    const graphStore = useCurrentGraphStore();
-    V1Service.getShareV1ShareShareIdGet(this.graphShareId).then(response => {
-      this.graph = response.data;
-      this.shareDetails = response;
-      console.log(this.graph);
-      graphStore.setGraph(this.graph);
-      console.log(graphStore.currentGraph);
-    });
+    this.graphShareId = this.$route.params.id
+    const graphStore = useCurrentGraphStore()
+    V1Service.getShareV1ShareShareIdGet(this.graphShareId).then((response) => {
+      this.graph = response.data
+      this.shareDetails = response
+      console.log(this.graph)
+      graphStore.setGraph(this.graph)
+      console.log(graphStore.currentGraph)
+    })
   },
   methods: {
     toggleSidebar() {
-      this.sidebarVisible = !this.sidebarVisible;
-    },
+      this.sidebarVisible = !this.sidebarVisible
+    }
   },
   data(): DataProps {
     return {
       graph: null,
       sidebarVisible: false,
       graphShareId: null,
-      shareDetails: null,
-    };
-  },
+      shareDetails: null
+    }
+  }
 }
 </script>
 
 <template>
   <Header class="header" size="s">
     <div class="graph-name" v-if="graph">
-      <a class="label medium" @click="toggleSidebar()">{{graph.algorithm.reference}}</a>
+      <a class="label medium" @click="toggleSidebar()">{{ graph.algorithm.reference }}</a>
     </div>
     <div class="align-right" v-if="shareDetails">
-      <span class="medium">Available until: {{shareDetails.valid_until}}</span>
+      <span class="medium">Available until: {{ shareDetails.valid_until }}</span>
     </div>
   </Header>
   <PipelineStepsSidebar v-if="graph && sidebarVisible" />
@@ -87,7 +86,7 @@ export default {
 }
 
 .label {
-  font-family: "Open-Sans-Regular", sans-serif;
+  font-family: 'Open-Sans-Regular', sans-serif;
   font-weight: bold;
   color: #fff;
   background-color: #333;
@@ -117,17 +116,16 @@ a.label {
   user-select: none;
 }
 
-a.label:focus, a.label:hover {
+a.label:focus,
+a.label:hover {
   outline: none;
   background-color: #555;
-
 }
-.label:focus{
-  outline: #fff 2px solid ;
+.label:focus {
+  outline: #fff 2px solid;
 }
 
 .align-right {
   margin-left: auto;
 }
-
 </style>

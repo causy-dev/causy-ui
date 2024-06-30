@@ -16,44 +16,44 @@
 </template>
 
 <script lang="ts">
-import { useWorkspaceStore } from "@/stores/workspace";
+import { useWorkspaceStore } from '@/stores/workspace'
 
 export default {
-  name: "ExperimentSelect",
+  name: 'ExperimentSelect',
   data() {
     return {
       selectedExperiment: useWorkspaceStore().currentExperiment.name,
-      selectedVersion: useWorkspaceStore().currentExperimentVersion,
-    };
+      selectedVersion: useWorkspaceStore().currentExperimentVersion
+    }
   },
   computed: {
     experiments() {
-      return useWorkspaceStore().currentExperiments;
+      return useWorkspaceStore().currentExperiments
     },
     selectedExperimentVersions() {
-      const experiment = this.experiments.find(e => e.name === this.selectedExperiment);
-      return experiment ? experiment.versions : [];
-    },
+      const experiment = this.experiments.find((e) => e.name === this.selectedExperiment)
+      return experiment ? experiment.versions : []
+    }
   },
   watch: {
     selectedExperiment(newExperiment) {
-      useWorkspaceStore().setExperiment(newExperiment);
-      this.selectedVersion = useWorkspaceStore().currentExperimentVersion;
+      useWorkspaceStore().setExperiment(newExperiment)
+      this.selectedVersion = useWorkspaceStore().currentExperimentVersion
     },
     selectedVersion(newVersion) {
-      useWorkspaceStore().setExperimentVersion(this.selectedExperiment, newVersion);
-    },
-  },
-};
+      useWorkspaceStore().setExperimentVersion(this.selectedExperiment, newVersion)
+    }
+  }
+}
 </script>
 
 <style scoped>
- .experiment-select {
-    padding: 8px;
-    border-radius: 5px;
-    background-color: #333;
-    color: #fff;
-    border-color: #333;
-    font-weight: 600;
-  }
+.experiment-select {
+  padding: 8px;
+  border-radius: 5px;
+  background-color: #333;
+  color: #fff;
+  border-color: #333;
+  font-weight: 600;
+}
 </style>

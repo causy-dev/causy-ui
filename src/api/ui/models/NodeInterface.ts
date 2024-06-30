@@ -6,7 +6,6 @@
  * Node interface for the graph. A node is defined by a name and a value.
  */
 export type NodeInterface = {
-    name: string;
-    id: string;
-};
-
+  name: string
+  id: string
+}

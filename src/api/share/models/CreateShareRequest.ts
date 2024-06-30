@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CausyModel_Input } from './CausyModel_Input';
+import type { CausyModel_Input } from './CausyModel_Input'
 export type CreateShareRequest = {
-    data: CausyModel_Input;
-    valid_until?: (string | null);
-};
-
+  data: CausyModel_Input
+  valid_until?: string | null
+}

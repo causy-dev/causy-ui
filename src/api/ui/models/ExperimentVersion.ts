@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ExperimentVersion = {
-    version: number;
-    name: string;
-};
-
+  version: number
+  name: string
+}

@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export enum AlgorithmReferenceType {
-    FILE = 'file',
-    NAME = 'name',
-    PYTHON_MODULE = 'python_module',
+  FILE = 'file',
+  NAME = 'name',
+  PYTHON_MODULE = 'python_module'
 }

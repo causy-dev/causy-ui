@@ -6,7 +6,6 @@
  * Represents a reference to a variable.
  */
 export type VariableReference = {
-    name: string;
-    readonly type: string;
-};
-
+  name: string
+  readonly type: string
+}

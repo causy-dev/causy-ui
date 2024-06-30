@@ -2,10 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { NodePosition } from './NodePosition';
+import type { NodePosition } from './NodePosition'
 export type PositionedNode = {
-    name: string;
-    id: string;
-    position?: (NodePosition | null);
-};
-
+  name: string
+  id: string
+  position?: NodePosition | null
+}

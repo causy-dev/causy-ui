@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CausyEdgeValue = {
-    metadata?: Record<string, any>;
-    edge_type?: string;
-};
-
+  metadata?: Record<string, any>
+  edge_type?: string
+}

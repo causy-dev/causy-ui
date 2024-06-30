@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CausyAlgorithm = {
-    type: string;
-    reference: string;
-};
-
+  type: string
+  reference: string
+}

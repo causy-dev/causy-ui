@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type NodePosition = {
-    'x': (number | null);
-    'y': (number | null);
-};
-
+  x: number | null
+  y: number | null
+}

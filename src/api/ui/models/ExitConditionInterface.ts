@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ExitConditionInterface = {
-    readonly name: string;
-};
-
+  readonly name: string
+}
