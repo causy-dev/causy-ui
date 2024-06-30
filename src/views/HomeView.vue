@@ -132,14 +132,26 @@ export default {
     <Graph :graph="this.workspaceStore.currentResult" :algorithm="this.workspaceStore.algorithm" />
   </main>
   <main v-else>
-    <div class="loading">
+    <div
+      class="empty"
+      v-if="
+        this.uiStore.currentStatus &&
+        this.uiStore.currentStatus.workspace_loaded &&
+        !this.workspaceStore.currentResult
+      "
+    >
+      <img src="../assets/img/computing%20mouse.png" alt="No model selected" />
+      <span>No results available.</span>
+    </div>
+    <div class="loading" v-else>
       <Spinner>Loading model...</Spinner>
     </div>
   </main>
 </template>
 
 <style scoped>
-.loading {
+.loading,
+.empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -148,6 +160,17 @@ export default {
   width: 100vw;
   top: 0;
   left: 0;
+}
+
+.empty > img {
+  width: 15rem;
+  height: 15rem;
+}
+
+.empty > span {
+  font-family: 'Open-Sans-Regular', sans-serif;
+  font-size: 1.5rem;
+  margin-top: 1rem;
 }
 
 .header {
