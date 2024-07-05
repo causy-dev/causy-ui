@@ -13,9 +13,14 @@ type NodePosition = {
 }
 
 String.prototype.interpolate = function (params) {
+
   const names = Object.keys(params)
   const vals = Object.values(params)
-  return new Function(...names, `return \`${this}\`;`)(...vals)
+  try {
+    return new Function(...names, `return \`${this}\`;`)(...vals)
+  } catch(e) {
+    return JSON.stringify(params)
+  }
 }
 
 export default {
