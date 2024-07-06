@@ -3,8 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type APIStatus = {
-  environment: string | null
-  version: string | null
-  documentation_url: string | null
-  causy_version: string | null
-}
+    environment: (string | null);
+    version: (string | null);
+    documentation_url: (string | null);
+    causy_version: (string | null);
+};
+

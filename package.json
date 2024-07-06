@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "apiclient": "openapi --input http://localhost:8000/openapi.json --output src/api/ui --client axios",
-    "shareapiclient": "openapi --input https://share.dev.causy.dev/openapi.json --output src/api/share --client axios"
+    "shareapiclient": "openapi --input http://127.0.0.1:8080/openapi.json --output src/api/share --client axios"
   },
   "dependencies": {
     "@causy-dev/causy-components": "^0.0.11",

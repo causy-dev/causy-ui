@@ -28,6 +28,9 @@ export const useCurrentGraphStore = defineStore('currentGraph', {
     setGraph(graph: ExtendedResult) {
       this.graph = graph
     },
+    setAlgorithm(algorithm: Algorithm) {
+        this.algorithm = algorithm
+    },
     fetchGraph() {
       return ApiService.getModelApiV1ModelGet().then((response) => {
         this.graph = response

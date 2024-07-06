@@ -4,7 +4,10 @@ import { OpenAPI, ShareCreatedResponse, V1Service } from '@/api/share'
 import type { CreateShareRequest, CausyModel_Input } from '@/api/share'
 import { toRaw } from 'vue'
 import moment from 'moment'
-
+import {useWorkspaceStore} from "@/stores/workspace";
+import {usePipelineSidebarStore} from "@/stores/pipelineSidebar";
+import { Button,  } from '@causy-dev/causy-components'
+import '@causy-dev/causy-components'
 interface availableSharingDuration {
   name: string
   value: number | null
@@ -15,10 +18,20 @@ interface ShareGraphData {
   shareResult: ShareCreatedResponse | null
 }
 
+interface DataProps {
+  workspaceStore: WorkspaceStoreType
+}
+
 export default {
   name: 'ShareGraph',
+  components: {Button},
   props: {},
   emits: ['toggleShare', 'share'],
+  data(): DataProps {
+    return {
+      workspaceStore: useWorkspaceStore(),
+    }
+  },
   methods: {
     updateSelectedSharingDuration(duration: availableSharingDuration) {
       this.selectedSharingDuration = duration.value
@@ -28,9 +41,10 @@ export default {
       return this.selectedSharingDuration === duration.value
     },
     share() {
-      var graph = useCurrentGraphStore()
       console.log('share me baby')
-      const graphData: CausyModel_Input = toRaw(graph.currentGraph)
+      const wsStore = useWorkspaceStore();
+      console.log(wsStore.currentResult)
+      const graphData: CausyModel_Input = wsStore.currentResult as CausyModel_Input;
       const duration = this.selectedSharingDuration
       console.log(duration)
 
@@ -42,9 +56,15 @@ export default {
         validUntil = date.toISOString()
       }
 
+      console.log(wsStore.currentExperimentVersion)
+
       const requestBody: CreateShareRequest = {
         data: graphData,
-        valid_until: validUntil
+        algorithm: wsStore.currentAlgorithm,
+        valid_until: validUntil,
+        workspace_name: wsStore.currentWorkspace.name,
+        experiment_name: wsStore.currentExperimentName,
+        experiment_date: wsStore.currentExperimentVersion,
       }
       console.log(requestBody)
       try {
@@ -112,9 +132,10 @@ export default {
         readonly
       />
       <div class="button-group">
-        <button type="button" class="button button-secondary medium" @click="$emit('toggleShare')">
-          Close
-        </button>
+        <Button appearance="primary"
+                  emphasis="high"
+                  @click="$emit('toggleShare')"
+        >Close</Button>
       </div>
     </div>
     <div class="share-content" v-else>
@@ -140,14 +161,15 @@ export default {
         >
 
         <div class="button-group">
-          <button class="button medium button-primary">Share</button>
-          <button
-            type="button"
-            class="button button-secondary medium"
+          <Button appearance="primary"
+                  emphasis="high">Share</Button>
+          <Button
+              appearance="primary"
+              emphasis="medium"
             @click="$emit('toggleShare')"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     </div>
@@ -204,7 +226,7 @@ export default {
 }
 
 .share-content a {
-  color: #008b8bff;
+  color: #5620bf;
   display: inline;
 }
 
@@ -216,9 +238,9 @@ export default {
 
 .toggle-group button {
   margin-right: 0rem;
-  border: 1px solid #008b8bff;
+  border: 1px solid #5620bf;
   background-color: #fff;
-  color: #008b8bff;
+  color: #5620bf;
   padding: 0.2rem 0.4rem;
   border-radius: 0px;
   font-size: 0.8rem;
@@ -229,12 +251,12 @@ export default {
 }
 
 .toggle-group button.active {
-  background-color: #008b8bff;
+  background-color: #5620bf;
   color: #fff;
 }
 
 .toggle-group button.active:hover {
-  background-color: #008b8bff;
+  background-color: #5620bf;
   color: #fff;
 }
 
@@ -246,7 +268,7 @@ export default {
 .toggle-group button:last-child {
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  border-right: 1px solid #008b8bff;
+  border-right: 1px solid #5620bf;
 }
 .legal {
   font-family: 'Open-Sans-Regular', sans-serif;
@@ -258,44 +280,11 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  margin-left: -0.5rem;
 }
 
-.button {
-  margin-left: 0.5rem;
-  border: 1px solid #008b8bff;
-  background-color: #fff;
-  color: #008b8bff;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: normal;
-  cursor: pointer;
-  user-select: none;
-}
-
-.button:hover {
-  background-color: #008b8bff;
-  color: #fff;
-}
-
-.button.button-primary {
-  background-color: #008b8bff;
-  color: #fff;
-}
-
-.button.button-primary:hover {
-  background-color: #008b8bff;
-  color: #fff;
-}
-
-.button.button-secondary {
-  border: 1px solid #008b8bff;
-  background-color: #fff;
-  color: #008b8bff;
-}
-
-.button-group button:first-child {
-  margin-left: 0;
+.button-group button {
+  margin-right: 0.5rem;
 }
 
 .copy-input {

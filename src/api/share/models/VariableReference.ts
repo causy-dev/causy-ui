@@ -2,7 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CausyNodePosition = {
-  x: number | null
-  y: number | null
-}
+/**
+ * Represents a reference to a variable.
+ */
+export type VariableReference = {
+    name: string;
+    readonly type: string;
+};
+

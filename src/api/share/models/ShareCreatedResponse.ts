@@ -2,12 +2,18 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CausyModel_Output } from './CausyModel_Output'
+import type { Algorithm } from './Algorithm';
+import type { ExtendedResult_Output } from './ExtendedResult_Output';
 export type ShareCreatedResponse = {
-  share_id: string
-  data?: CausyModel_Output | null
-  valid_until?: string | null
-  created_at?: string | null
-  updated_at?: string | null
-  management_code: string
-}
+    share_id: string;
+    workspace_name?: (string | null);
+    experiment_name?: (string | null);
+    experiment_date?: (string | null);
+    data?: (ExtendedResult_Output | null);
+    algorithm?: (Algorithm | null);
+    valid_until?: (string | null);
+    created_at?: (string | null);
+    updated_at?: (string | null);
+    management_code: string;
+};
+
