@@ -66,15 +66,19 @@ export default {
 .sidebar-container > * {
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .sidebar-container > *:nth-child(2) {
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .sidebar-container > *:nth-child(3) {
   background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
 }
 </style>
