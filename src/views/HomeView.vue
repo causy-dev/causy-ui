@@ -103,7 +103,7 @@ export default {
     <div class="workspace-name" v-if="workspace">
       {{ workspace.name }}
     </div>
-    <div v-if="workspaceStore.currentExperiment" class="experiment-select-center">
+    <div v-if="workspaceStore.currentExperimentVersion" class="experiment-select-center">
       <ExperimentSelect />
     </div>
     <div class="align-right">

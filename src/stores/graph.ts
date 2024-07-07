@@ -17,7 +17,7 @@ export const useCurrentGraphStore = defineStore('currentGraph', {
     currentGraph: (state) => state.graph,
     currentAlgorithm: (state) => state.algorithm,
     currentAlgorithmExtensionConfig: (state, extensionName: string) => {
-      for (let extension of state.algorithm?.extensions || []) {
+      for (const extension of state.algorithm?.extensions || []) {
         if (extension.name === extensionName) {
           return extension.config
         }

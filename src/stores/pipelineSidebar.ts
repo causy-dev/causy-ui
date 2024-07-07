@@ -31,7 +31,7 @@ export const usePipelineSidebarStore = defineStore('pipelineSidebarStore', {
       if (state.activeStepID === null || state.steps === null) {
         return null
       }
-      for (let step of state.steps) {
+      for (const step of state.steps) {
         if (step.id === state.activeStepID) {
           return step
         }
@@ -55,16 +55,16 @@ export const usePipelineSidebarStore = defineStore('pipelineSidebarStore', {
         return
       }
 
-      let mergedSteps = []
-      let availableSteps = []
-      for (let step of algorithm.pipeline_steps) {
+      const mergedSteps = []
+      const availableSteps = []
+      for (const step of algorithm.pipeline_steps) {
         // TODO add substeps here too
         availableSteps.push(step)
       }
       console.log(availableSteps)
-      for (let step of result.action_history) {
+      for (const step of result.action_history) {
         let algoStepDefinition = null
-        for (let algoStep in availableSteps) {
+        for (const algoStep in availableSteps) {
           if (availableSteps[algoStep].name === step.name) {
             algoStepDefinition = availableSteps[algoStep]
             availableSteps.splice(algoStep, 1)

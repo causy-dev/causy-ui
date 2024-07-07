@@ -8,7 +8,7 @@
     </select>
     <select v-model="selectedVersion" class="experiment-select">
       <option disabled value="">Please select a version</option>
-      <option v-for="version in selectedExperimentVersions" :key="version" :value="version.value">
+      <option v-for="version in selectedExperimentVersions" :key="version" :value="version.version">
         {{ version.name }}
       </option>
     </select>
@@ -37,8 +37,9 @@ export default {
   },
   watch: {
     selectedExperiment(newExperiment) {
-      useWorkspaceStore().setExperiment(newExperiment)
-      this.selectedVersion = useWorkspaceStore().currentExperimentVersion
+      useWorkspaceStore().setExperiment(newExperiment).then(() => {
+        this.selectedVersion = useWorkspaceStore().currentExperimentVersion
+      })
     },
     selectedVersion(newVersion) {
       useWorkspaceStore().setExperimentVersion(this.selectedExperiment, newVersion)

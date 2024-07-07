@@ -16,7 +16,7 @@ export const useWorkspaceStore = defineStore('workspace', {
     currentExperiments: (state) => state.experiments,
     currentExperiment: (state) => state.experiment,
     currentExperimentName: (state) => state.experiment?.name,
-    currentExperimentVersion: (state) => state.experiment?.version,
+    currentExperimentVersion: (state) => state.result?.version,
     currentResult: (state) => state.result,
     currentAlgorithm: (state) => state.algorithm
   },
@@ -30,7 +30,7 @@ export const useWorkspaceStore = defineStore('workspace', {
     fetchExperiments() {
       return ApiService.getExperimentsApiV1ExperimentsGet().then((response) => {
         this.experiments = response
-        let availableExperimentNames = this.experiments.map((experiment) => experiment.name)
+        const availableExperimentNames = this.experiments.map((experiment) => experiment.name)
         if (
           (response.length > 0 && this.experiment == null) ||
           !availableExperimentNames.includes(this.currentExperiment.name)
@@ -50,7 +50,7 @@ export const useWorkspaceStore = defineStore('workspace', {
     },
     setExperimentVersion(experimentName: string, version: number) {
       this.experiment = this.experiments.find((experiment) => experiment.name === experimentName)
-      return ApiService.getExperimentVersionApiV1ExperimentsExperimentNameVersionVersionGet(
+      return ApiService.getExperimentApiV1ExperimentsExperimentNameVersionNumberGet(
         this.experiment.name,
         version
       ).then((response) => {
