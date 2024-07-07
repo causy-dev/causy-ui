@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ApiService } from '@/api/ui/services/ApiService'
 import type { Workspace, Experiment, Status, ExtendedResult, ExtendedExperiment } from '@/api/ui'
 import { AlgorithmReferenceType } from '@/api/ui'
+import {useCurrentGraphStore} from "@/stores/graph";
 
 export const useWorkspaceStore = defineStore('workspace', {
   state: () => ({
@@ -59,6 +60,7 @@ export const useWorkspaceStore = defineStore('workspace', {
     },
     setCurrentResult(result: ExtendedResult) {
       this.result = result
+      useCurrentGraphStore().setGraph(result)
       this.fetchAlgorithm(result.algorithm.type, result.algorithm.reference)
     },
     fetchAlgorithm(algorithmReferenceType: AlgorithmReferenceType, algorithmReference: string) {

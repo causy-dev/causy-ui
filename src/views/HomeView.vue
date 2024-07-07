@@ -11,6 +11,8 @@ import { useWorkspaceStore } from '@/stores/workspace'
 import { Workspace } from '@/api/ui'
 import ExperimentSelect from '@/components/ExperimentSelect.vue'
 import SidebarItem from '@/components/SidebarItem.vue'
+import EdgeDetails from "@/components/EdgeDetails.vue";
+import {useEdgeDetailsStore} from "@/stores/edgeDetails";
 
 interface DataProps {
   shareVisible: boolean
@@ -19,12 +21,15 @@ interface DataProps {
   algorithm: Algorithm | null
   workspace: Workspace | null
   workspaceStore: any
+  graphStore: any,
+  edgeDetailsStore: any
   uiStore: any
   sidePanels: any[]
 }
 export default {
   name: 'HomeView',
   components: {
+    EdgeDetails,
     SidebarItem,
     ExperimentSelect,
     SidebarContainer,
@@ -92,6 +97,8 @@ export default {
       workspace: null,
       workspaceStore: useWorkspaceStore(),
       uiStore: useUIStore(),
+      edgeDetailsStore: useEdgeDetailsStore(),
+      graphStore: useCurrentGraphStore(),
       sidePanels: []
     }
   }
@@ -124,6 +131,7 @@ export default {
     v-if="this.workspaceStore.currentResult && shareVisible"
     @toggleShare="toggleShare()"
   />
+  <EdgeDetails v-if="edgeDetailsStore.selectedEdge" :edge="edgeDetailsStore.selectedEdge" @close="edgeDetailsStore.clearSelectedEdge" />
   <main
     v-if="
       this.workspaceStore.currentResult !== null && this.workspaceStore.currentAlgorithm !== null

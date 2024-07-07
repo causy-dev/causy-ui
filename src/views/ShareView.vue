@@ -6,16 +6,21 @@ import { useCurrentGraphStore } from '@/stores/graph'
 import type { ExtendedResult as CausyModel } from '@/api/ui'
 import type { ShareResponse } from '@/api/share'
 import { Header, Spinner } from '@causy-dev/causy-components'
+import EdgeDetails from "@/components/EdgeDetails.vue";
+import {useEdgeDetailsStore} from "@/stores/edgeDetails";
 
 interface DataProps {
   graph: CausyModel | null
   shareDetails: ShareResponse
   sidebarVisible: boolean
   graphShareId: string | null
+  edgeDetailsStore: any
+
 }
 export default {
   name: 'ShareView',
   components: {
+    EdgeDetails,
     Header,
     Spinner,
     PipelineStepsSidebar,
@@ -43,7 +48,8 @@ export default {
       graph: null,
       sidebarVisible: false,
       graphShareId: null,
-      shareDetails: null
+      shareDetails: null,
+      edgeDetailsStore: useEdgeDetailsStore(),
     }
   }
 }
@@ -58,6 +64,7 @@ export default {
       <span class="medium">Available until: {{ shareDetails.valid_until }}</span>
     </div>
   </Header>
+  <EdgeDetails v-if="edgeDetailsStore.selectedEdge" :edge="edgeDetailsStore.selectedEdge" @close="edgeDetailsStore.clearSelectedEdge" />
   <main
     v-if="
       graphStore && graphStore.currentGraph !== null

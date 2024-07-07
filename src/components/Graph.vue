@@ -3,10 +3,12 @@ import { MarkerType } from '@vue-flow/core'
 import type { ConnectionHandle } from '@vue-flow/core'
 
 import { Layout } from 'webcola'
-import type { EdgeInterface, CausyExtendedResult, CausyAlgorithm } from '@/api/ui'
+import type { EdgeInterface, ExtendedResult, Algorithm } from '@/api/ui'
 import { Graph as CausyGraph } from '@causy-dev/causy-components'
+import {useEdgeDetailsStore} from "@/stores/edgeDetails";
 import('@vue-flow/core/dist/style.css')
 import('../assets/vueflow.css')
+
 type NodePosition = {
   x: number
   y: number
@@ -29,8 +31,8 @@ export default {
   },
   name: 'Graph',
   props: {
-    graph: Object as () => CausyExtendedResult,
-    algorithm: Object as () => CausyAlgorithm
+    graph: Object as () => ExtendedResult,
+    algorithm: Object as () => Algorithm
   },
 
   data() {
@@ -39,7 +41,20 @@ export default {
     }
   },
   methods: {
-    findBestHandle(from: ConnectionHandle, to: ConnectionHandle) {
+
+    handleEdgeClick(event) {
+      let detailsStore = useEdgeDetailsStore();
+      detailsStore.setSelectedEdge(event.edge.source, event.edge.target)
+    },
+    findBestHandle(from: {
+      x: number;
+      width: number;
+      y: number;
+      id: string;
+      type: undefined;
+      nodeId: string;
+      height: number
+    }, to: { x: number; width: number; y: number; id: string; type: undefined; nodeId: string; height: number }) {
       // find the relative position of the two nodes
       let relative_position = {
         x: to.x - from.x,
@@ -275,16 +290,17 @@ export default {
         })
       }
 
+
       return elements
     }
-  }
+  },
 }
 </script>
 
 <template>
   <main>
     <div style="height: 100%">
-      <CausyGraph :elements="elements" />
+      <CausyGraph :elements="elements" @edge-click="handleEdgeClick" />
     </div>
   </main>
 </template>
